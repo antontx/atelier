@@ -9,55 +9,48 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SlidesRouteImport } from './routes/slides'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as Decks1RouteImport } from './routes/decks/1'
 
-const SlidesRoute = SlidesRouteImport.update({
-  id: '/slides',
-  path: '/slides',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const Decks1Route = Decks1RouteImport.update({
+  id: '/decks/1',
+  path: '/decks/1',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/slides': typeof SlidesRoute
+  '/decks/1': typeof Decks1Route
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/slides': typeof SlidesRoute
+  '/decks/1': typeof Decks1Route
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/slides': typeof SlidesRoute
+  '/decks/1': typeof Decks1Route
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/slides'
+  fullPaths: '/' | '/decks/1'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/slides'
-  id: '__root__' | '/' | '/slides'
+  to: '/' | '/decks/1'
+  id: '__root__' | '/' | '/decks/1'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  SlidesRoute: typeof SlidesRoute
+  Decks1Route: typeof Decks1Route
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/slides': {
-      id: '/slides'
-      path: '/slides'
-      fullPath: '/slides'
-      preLoaderRoute: typeof SlidesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
@@ -65,12 +58,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/decks/1': {
+      id: '/decks/1'
+      path: '/decks/1'
+      fullPath: '/decks/1'
+      preLoaderRoute: typeof Decks1RouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  SlidesRoute: SlidesRoute,
+  Decks1Route: Decks1Route,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
