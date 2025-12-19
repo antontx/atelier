@@ -1,21 +1,34 @@
-import { useCallback, useEffect, useRef, useState } from "react"
+import { Children, isValidElement, useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { Link } from "@tanstack/react-router"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { ButtonGroup } from "@/components/ui/button-group"
 import { Separator } from "@/components/ui/separator"
+import { Slide, type SlideProps } from "@/components/slide"
 
-export interface Slide {
-  id: string
+interface InternalSlide {
   content: React.ReactNode
   notes?: string
 }
 
 interface SlideViewerProps {
-  slides: Array<Slide>
+  children: React.ReactNode
 }
 
-export function SlideViewer({ slides }: SlideViewerProps) {
+export function SlideViewer({ children }: SlideViewerProps) {
+  const slides = useMemo(() => {
+    const result: InternalSlide[] = []
+    Children.forEach(children, (child) => {
+      if (isValidElement<SlideProps>(child) && child.type === Slide) {
+        result.push({
+          content: child.props.children,
+          notes: child.props.notes,
+        })
+      }
+    })
+    return result
+  }, [children])
+
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [showBorder, setShowBorder] = useState(true)
@@ -85,7 +98,7 @@ export function SlideViewer({ slides }: SlideViewerProps) {
             ? "w-screen h-screen max-w-none rounded-none"
             : "w-[1400px] max-w-[calc(100vw-320px-3rem)] aspect-video rounded-xl"
           } ${showBorder ? "" : "ring-0"}`}>
-            {slide.content}
+            {slide?.content}
           </Card>
         </div>
       </div>
@@ -134,7 +147,7 @@ export function SlideViewer({ slides }: SlideViewerProps) {
         <Separator />
         <CardContent className="flex-1 overflow-auto py-4">
           <pre className="whitespace-pre-wrap text-sm font-sans text-muted-foreground">
-            {slide.notes || "No notes for this slide"}
+            {slide?.notes || "No notes for this slide"}
           </pre>
         </CardContent>
       </Card>
