@@ -60,7 +60,8 @@ function SlideViewerInner({ children }: SlideViewerProps) {
   const slide = slides[currentIndex]
   const totalSteps = slide?.steps ?? 0
 
-  const goNext = useCallback(() => {
+  // Step-aware navigation (→/←): advance through steps then slides
+  const goNextStep = useCallback(() => {
     if (currentStep < totalSteps) {
       setCurrentStep((s) => s + 1)
     } else if (currentIndex < slides.length - 1) {
@@ -69,7 +70,7 @@ function SlideViewerInner({ children }: SlideViewerProps) {
     }
   }, [currentStep, totalSteps, currentIndex, slides.length])
 
-  const goPrev = useCallback(() => {
+  const goPrevStep = useCallback(() => {
     if (currentStep > 0) {
       setCurrentStep((s) => s - 1)
     } else if (currentIndex > 0) {
@@ -78,6 +79,21 @@ function SlideViewerInner({ children }: SlideViewerProps) {
       setCurrentStep(prevSlide?.steps ?? 0)
     }
   }, [currentStep, currentIndex, slides])
+
+  // Direct slide navigation (↓/↑): jump to next/prev slide directly
+  const goNextSlide = useCallback(() => {
+    if (currentIndex < slides.length - 1) {
+      setCurrentIndex((i) => i + 1)
+      setCurrentStep(0)
+    }
+  }, [currentIndex, slides.length])
+
+  const goPrevSlide = useCallback(() => {
+    if (currentIndex > 0) {
+      setCurrentIndex((i) => i - 1)
+      setCurrentStep(0)
+    }
+  }, [currentIndex])
 
   const slideRef = useRef<HTMLDivElement>(null)
 
@@ -104,12 +120,18 @@ function SlideViewerInner({ children }: SlideViewerProps) {
       const target = e.target as HTMLElement
       if (target.tagName === "INPUT" || target.tagName === "TEXTAREA") return
 
-      if (e.key === "ArrowDown" || e.key === "ArrowRight") {
+      if (e.key === "ArrowRight") {
         e.preventDefault()
-        goNext()
-      } else if (e.key === "ArrowUp" || e.key === "ArrowLeft") {
+        goNextStep()
+      } else if (e.key === "ArrowLeft") {
         e.preventDefault()
-        goPrev()
+        goPrevStep()
+      } else if (e.key === "ArrowDown") {
+        e.preventDefault()
+        goNextSlide()
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault()
+        goPrevSlide()
       } else if (e.key === "Escape" && isFullscreen) {
         document.exitFullscreen()
       }
@@ -117,7 +139,7 @@ function SlideViewerInner({ children }: SlideViewerProps) {
 
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [goNext, goPrev, isFullscreen])
+  }, [goNextStep, goPrevStep, goNextSlide, goPrevSlide, isFullscreen])
 
   const isAtStart = currentIndex === 0 && currentStep === 0
   const isAtEnd = currentIndex === slides.length - 1 && currentStep === totalSteps
@@ -179,7 +201,7 @@ function SlideViewerInner({ children }: SlideViewerProps) {
               <Button
                 variant="outline"
                 size={isCollapsed ? "icon-sm" : "sm"}
-                onClick={goPrev}
+                onClick={goPrevStep}
                 disabled={isAtStart}
               >
                 {isCollapsed ? "↑" : "←"}
@@ -187,7 +209,7 @@ function SlideViewerInner({ children }: SlideViewerProps) {
               <Button
                 variant="outline"
                 size={isCollapsed ? "icon-sm" : "sm"}
-                onClick={goNext}
+                onClick={goNextStep}
                 disabled={isAtEnd}
               >
                 {isCollapsed ? "↓" : "→"}
