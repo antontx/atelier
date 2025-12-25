@@ -1,6 +1,6 @@
-import { SlideViewer } from '@/components/slide-viewer'
-import { Slide } from '@/components/slide'
-import { Step, useSteps } from '@/components/step'
+import { SlideViewer } from '@/components/slides/slide-viewer'
+import { Slide } from '@/components/slides/slide'
+import { Step, useSteps } from '@/components/slides/step'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {

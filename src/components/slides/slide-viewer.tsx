@@ -10,8 +10,8 @@ import {
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { ButtonGroup } from '@/components/ui/button-group'
-import { Slide, type SlideProps } from '@/components/slide'
-import { StepContext } from '@/components/step'
+import { Slide, type SlideProps } from '@/components/slides/slide'
+import { StepContext } from '@/components/slides/step'
 import {
   Sidebar,
   SidebarContent,
