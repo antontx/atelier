@@ -135,10 +135,9 @@ function SlideViewerInner({ children }: SlideViewerProps) {
     send,
   ])
 
-  // Reset steps when slide changes
+  // Reset current step when slide changes (totalSteps will be set by useSteps)
   useEffect(() => {
     setCurrentStep(0)
-    setTotalSteps(0)
   }, [currentIndex])
 
   // Step-aware navigation (→/←): advance through steps then slides
@@ -248,7 +247,15 @@ function SlideViewerInner({ children }: SlideViewerProps) {
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [goNextStep, goPrevStep, goNextSlide, goPrevSlide, isFullscreen, isPoppedOut, popIn])
+  }, [
+    goNextStep,
+    goPrevStep,
+    goNextSlide,
+    goPrevSlide,
+    isFullscreen,
+    isPoppedOut,
+    popIn,
+  ])
 
   const isAtStart = currentIndex === 0 && currentStep === 0
   const isAtEnd =
@@ -274,7 +281,9 @@ function SlideViewerInner({ children }: SlideViewerProps) {
                 setTotalSteps,
               }}
             >
-              {slide.content}
+              <div className="flex-1 h-full w-full overflow-hidden">
+                {slide.content}
+              </div>
             </StepContext.Provider>
           </Card>
         </div>
