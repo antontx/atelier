@@ -63,6 +63,44 @@ const loading: State = { status: 'loading' }
 const error: State = { status: 'error', error: 'Failed' }
 const success: State = { status: 'success', data: { id: 1 } }`,
   },
+  // Step 5: Highlight invalid section
+  {
+    code: `type State =
+  | { status: 'loading' }
+  | { status: 'error'; error: string }
+  | { status: 'success'; data: Record<string, unknown> }
+
+// ❌ Type error: 'error' does not exist on loading
+const invalid: State = {
+  status: 'loading',
+  error: 'Oops!',
+}
+
+// ✅ Compiles - each state has only its properties
+const loading: State = { status: 'loading' }
+const error: State = { status: 'error', error: 'Failed' }
+const success: State = { status: 'success', data: { id: 1 } }`,
+    highlightedRanges: [[6, 10]],
+  },
+  // Step 6: Highlight valid section
+  {
+    code: `type State =
+  | { status: 'loading' }
+  | { status: 'error'; error: string }
+  | { status: 'success'; data: Record<string, unknown> }
+
+// ❌ Type error: 'error' does not exist on loading
+const invalid: State = {
+  status: 'loading',
+  error: 'Oops!',
+}
+
+// ✅ Compiles - each state has only its properties
+const loading: State = { status: 'loading' }
+const error: State = { status: 'error', error: 'Failed' }
+const success: State = { status: 'success', data: { id: 1 } }`,
+    highlightedRanges: [[12, 15]],
+  },
 ]
 
 function DiscriminatedUnionsSlide() {
