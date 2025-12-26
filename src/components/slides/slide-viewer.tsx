@@ -200,32 +200,6 @@ function SlideViewerInner({ children }: SlideViewerProps) {
       document.removeEventListener('fullscreenchange', handleFullscreenChange)
   }, [])
 
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      const target = e.target as HTMLElement
-      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') return
-
-      if (e.key === 'ArrowRight') {
-        e.preventDefault()
-        goNextStep()
-      } else if (e.key === 'ArrowLeft') {
-        e.preventDefault()
-        goPrevStep()
-      } else if (e.key === 'ArrowDown') {
-        e.preventDefault()
-        goNextSlide()
-      } else if (e.key === 'ArrowUp') {
-        e.preventDefault()
-        goPrevSlide()
-      } else if (e.key === 'Escape' && isFullscreen) {
-        document.exitFullscreen()
-      }
-    }
-
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [goNextStep, goPrevStep, goNextSlide, goPrevSlide, isFullscreen])
-
   const popOut = useCallback(() => {
     const popup = window.open(
       '/presenter',
@@ -245,6 +219,36 @@ function SlideViewerInner({ children }: SlideViewerProps) {
     }
     setIsPoppedOut(false)
   }, [])
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') return
+
+      if (e.key === 'ArrowRight') {
+        e.preventDefault()
+        goNextStep()
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault()
+        goPrevStep()
+      } else if (e.key === 'ArrowDown') {
+        e.preventDefault()
+        goNextSlide()
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault()
+        goPrevSlide()
+      } else if (e.key === 'Escape') {
+        if (isPoppedOut) {
+          popIn()
+        } else if (isFullscreen) {
+          document.exitFullscreen()
+        }
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [goNextStep, goPrevStep, goNextSlide, goPrevSlide, isFullscreen, isPoppedOut, popIn])
 
   const isAtStart = currentIndex === 0 && currentStep === 0
   const isAtEnd =
@@ -274,21 +278,6 @@ function SlideViewerInner({ children }: SlideViewerProps) {
             </StepContext.Provider>
           </Card>
         </div>
-
-        {/* Pop-back-in button when sidebar is popped out */}
-        {isPoppedOut && (
-          <div className="fixed bottom-4 right-4 z-50">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={popIn}
-              title="Pop sidebar back in"
-              className="shadow-lg"
-            >
-              ⇲ Pop In
-            </Button>
-          </div>
-        )}
       </main>
 
       {/* Only show sidebar when not popped out */}
