@@ -6,7 +6,7 @@ import {
   type PresenterMessage,
 } from '@/hooks/use-presenter-channel'
 import { extractSlides } from '@/components/slides/slides-data'
-import { slidesFragment } from '@/slides'
+import { slides } from '@/deck'
 
 export const Route = createFileRoute('/presenter')({
   component: PresenterView,
@@ -20,11 +20,8 @@ function PresenterView() {
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [isConnected, setIsConnected] = useState(false)
 
-  // Extract slides from shared Slides component
-  const slides = useMemo(
-    () => extractSlides(slidesFragment),
-    [],
-  )
+  // Extract slides from shared slides fragment
+  const extractedSlides = useMemo(() => extractSlides(slides), [])
 
   const handleMessage = useCallback((msg: PresenterMessage) => {
     if (msg.type === 'state') {
@@ -37,7 +34,7 @@ function PresenterView() {
     } else if (msg.type === 'pong') {
       setIsConnected(true)
     }
-  }, [slides.length])
+  }, [extractedSlides.length])
 
   const { send } = usePresenterChannel(handleMessage)
 
@@ -80,7 +77,7 @@ function PresenterView() {
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [send])
 
-  const slide = slides[currentIndex]
+  const slide = extractedSlides[currentIndex]
 
   const handleNextStep = useCallback(() => {
     send({ type: 'navigate', action: 'nextStep' })
@@ -120,7 +117,7 @@ function PresenterView() {
     <div className="h-screen">
       <PresenterPanel
         currentIndex={currentIndex}
-        totalSlides={slides.length}
+        totalSlides={extractedSlides.length}
         currentStep={currentStep}
         totalSteps={totalSteps}
         notes={slide?.notes}
