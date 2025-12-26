@@ -144,7 +144,7 @@ export function CodeBlock({ steps, lang = 'typescript' }: CodeBlockProps) {
       }
       ${highlightedSelectors} {
         opacity: 1;
-        ${isDark ? 'text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);' : ''}
+        ${isDark ? 'text-shadow: 0 0 30px color-mix(in srgb, currentColor 25%, transparent);' : ''}
       }
     `
     : ''
